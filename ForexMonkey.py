@@ -317,9 +317,28 @@ def AddAttributesLabels(data,Candles2Consider=30,tradeLenght=5,date_index=False)
 
 
 # In[52]:
-
-
 def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
+    df=data.copy()              ##Make a copy not as to change original
+    
+    ##Create a label that tells us what the output lenghtPerUnitTime Later
+    for i in range (len(whatToPredict)):
+        for j in range (1,tradeLenght)   
+        df['Label_'+whatToPredict[i]+str(j)] = df[whatToPredict[i]].shift(-j)
+    
+    
+    ##Get rid of rows that have empyt cells 
+    df.dropna(inplace = True)
+    
+    ##Re-index the data frame
+    if date_index==True:
+        pass
+    else:
+        df = df.reset_index()
+        del df['index']
+    
+    return df
+
+def AddLabel(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     df=data.copy()              ##Make a copy not as to change original
     
     ##Create a label that tells us what the output lenghtPerUnitTime Later
