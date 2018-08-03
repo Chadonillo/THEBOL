@@ -322,8 +322,8 @@ def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     
     ##Create a label that tells us what the output lenghtPerUnitTime Later
     for i in range (len(whatToPredict)):
-        for j in range (1,tradeLenght)   
-        df['Label_'+whatToPredict[i]+str(j)] = df[whatToPredict[i]].shift(-j)
+        for j in range (1,tradeLenght):   
+            df['Label_'+whatToPredict[i]+str(j)] = df[whatToPredict[i]].shift(-j)
     
     
     ##Get rid of rows that have empyt cells 
