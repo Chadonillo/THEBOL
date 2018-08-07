@@ -217,15 +217,15 @@ def EMA(data,column='close',value=14): #simple moving average
 def getData(ForexPair,timeFrame, date_index=False, drive=False,compressing=False, volume_in=False): #TF is either 1H or 1M
     if drive==True:
         if compressing == True:
-            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'.csv', compression='gzip')
+            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
         else:
-            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'.csv')
+            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')
           
     else:
         if compressing == True:
-            data = pd.read_csv('Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'.csv', compression='gzip')
+            data = pd.read_csv('Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
         else:
-            data = pd.read_csv('Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'.csv')          
+            data = pd.read_csv('Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')          
         
     ##Rename columns
     if date_index == True:
