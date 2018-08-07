@@ -214,19 +214,29 @@ def EMA(data,column='close',value=14): #simple moving average
 
 
 ##Get Data from csv files compressed with gzip format
-def getData(ForexPair,year,timeFrame, date_index=False, drive=False): #TF is either 1H or 1M
+def getData(ForexPair,timeFrame, date_index=False, drive=False,compressing=False, volume_in=False): #TF is either 1H or 1M
     if drive==True:
-        data = pd.read_csv('drive/Colab/Trading/Compressed_Forex_'+timeFrame+'_(gzip)/'+str(year)+'/Compressed_'+ForexPair+'_'+str(year)+'_'+timeFrame+'_.csv', compression='gzip')
+        if compressing == True:
+            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'_.csv', compression='gzip')
+        else:
+            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'_.csv')
+          
     else:
-        data = pd.read_csv('Compressed_Forex_'+timeFrame+'_(gzip)/'+str(year)+'/Compressed_'+ForexPair+'_'+str(year)+'_'+timeFrame+'_.csv', compression='gzip')
-    
+        if compressing == True:
+            data = pd.read_csv('Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'_.csv', compression='gzip')
+        else:
+            data = pd.read_csv('Forex_'+timeFrame+'/'+ForexPair+'_live_'+timeFrame+'_.csv')          
+        
     ##Rename columns
     if date_index == True:
         data['Date and Time'] = pd.to_datetime(data['Gmt time'],format='%d.%m.%Y %H:%M:%S.000')
         data.set_index('Date and Time', inplace=True)
     else:
         pass
-    data = data.loc[:,['Open','High', 'Low', 'Close','Volume']]
+    if volume_in==True:
+        data = data.loc[:,['Open','High', 'Low', 'Close','Volume']]
+    else:
+        data = data.loc[:,['Open','High', 'Low', 'Close']]
     global stock_df
     stock_df = stockstats.StockDataFrame.retype(data)
     return data
@@ -322,7 +332,7 @@ def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     
     ##Create a label that tells us what the output lenghtPerUnitTime Later
     for i in range (len(whatToPredict)):
-        for j in range (1,tradeLenght):   
+        for j in range (1,tradeLenght+1):   
             df['Label_'+whatToPredict[i]+str(j)] = df[whatToPredict[i]].shift(-j)
     
     
