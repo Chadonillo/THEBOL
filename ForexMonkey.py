@@ -217,9 +217,9 @@ def EMA(data,column='close',value=14): #simple moving average
 def getData(ForexPair,timeFrame, date_index=False, drive=False,compressing=False, volume_in=False): #TF is either 1H or 1M
     if drive==True:
         if compressing == True:
-            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
+            data = pd.read_csv('drive/Colab/Trading NN/Data/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
         else:
-            data = pd.read_csv('drive/Colab/Trading NN/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')
+            data = pd.read_csv('drive/Colab/Trading NN/Data/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')
           
     else:
         if compressing == True:
@@ -327,7 +327,7 @@ def AddAttributesLabels(data,Candles2Consider=30,tradeLenght=5,date_index=False)
 
 
 # In[52]:
-def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
+def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False,DropNan=False):
     df=data.copy()              ##Make a copy not as to change original
     
     ##Create a label that tells us what the output lenghtPerUnitTime Later
@@ -337,7 +337,8 @@ def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     
     
     ##Get rid of rows that have empyt cells 
-    df.dropna(inplace = True)
+    if DropNan==True:
+        df.dropna(inplace = True)
     
     ##Re-index the data frame
     if date_index==True:
@@ -348,7 +349,7 @@ def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     
     return df
 
-def AddLabel(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
+def AddLabel(data,whatToPredict = ['close'], tradeLenght=5, date_index=False,DropNan=False):
     df=data.copy()              ##Make a copy not as to change original
     
     ##Create a label that tells us what the output lenghtPerUnitTime Later
@@ -357,7 +358,9 @@ def AddLabel(data,whatToPredict = ['close'], tradeLenght=5, date_index=False):
     
     
     ##Get rid of rows that have empyt cells 
-    df.dropna(inplace = True)
+    if DropNan==True:
+        df = df.dropna()
+
     
     ##Re-index the data frame
     if date_index==True:
