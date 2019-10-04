@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[26]:
-
-
 ##Import libraries
 import math                           ##Math functions
 import numpy as np                    ##Number functions
@@ -14,11 +8,6 @@ import stockstats
 global stock_df
 
 #15 Indicators in this file more to come
-
-
-# In[27]:
-
-
 Indicatornames = ['RSI(data, value=14)','WILLIAMR(data, value=14)','CCI(data, value=14)','BB(data)','ADX(data)',
                   'MACD(data)','PCT_Change(data)',"Rate_of_Change(data,column='close',shift=1)",'RSV(data,value)',
                   "TRIX(data,column='close',value=12)",'DMA(data)',"MVAR(data,column='close',value=12)",
@@ -30,9 +19,6 @@ funnames = ['ReduceDataFrame(data,timeFrame,Days2Consider=30,date_index=False)',
            'Test_prediction(df_test, prediction)']
 
 
-# In[28]:
-
-
 def IndicatorNames():
     for i in range (len(Indicatornames)):
         print(Indicatornames[i])
@@ -40,35 +26,24 @@ def FunctionNames():
     for i in range (len(funnames)):
         print(funnames[i])
 
-
-# In[29]:
-
-
 def split(x,y,train_split=0.8):
     if len(x) != len(y):
         print('ERROR: the size of x lenght is not equal to y lenght: x:('+len(x)+') and y:('+len(y)+')')
     lenght=len(x)
     num_train = int(train_split*lenght)
     num_test = lenght - num_train
-    
+
     x_train = x[0:num_train]
     y_train = y[0:num_train]
     x_test = x[num_train:]
     y_test = y[num_train:]
-    
+
     return x_train, y_train, x_test, y_test
-
-
-# In[30]:
-
 
 def RSI(data, value=14):
     df = data.copy()
     df['RSI '+str(value)] = stock_df['rsi_'+str(value)][value+1:]
     return df
-
-
-# In[31]:
 
 
 def WILLIAMR(data, value=14):
@@ -106,7 +81,7 @@ def ADX(data):
     df['-DI'] = stock_df['mdi'] [17:]
     df['DX'] = stock_df['dx'] [17:]
     df['ADX'] = stock_df['adx']  [17:]
-    df['ADXr'] = stock_df['adxr'] [17:]   
+    df['ADXr'] = stock_df['adxr'] [17:]
     return df
 
 
@@ -220,13 +195,13 @@ def getData(ForexPair,timeFrame, date_index=False, drive=False,compressing=False
             data = pd.read_csv('drive/Colab/Trading NN/Data/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
         else:
             data = pd.read_csv('drive/Colab/Trading NN/Data/Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')
-          
+
     else:
         if compressing == True:
             data = pd.read_csv('Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv', compression='gzip')
         else:
-            data = pd.read_csv('Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')          
-        
+            data = pd.read_csv('Forex_'+timeFrame+'/Live_'+ForexPair+'_'+timeFrame+'.csv')
+
     ##Rename columns
     if date_index == True:
         data['Date and Time'] = pd.to_datetime(data['Gmt time'],format='%d.%m.%Y %H:%M:%S.000')
@@ -246,8 +221,8 @@ def getData(ForexPair,timeFrame, date_index=False, drive=False,compressing=False
 
 
 ##This allows you to choose how many days to consider in new data frame
-def ReduceDataFrame(data,timeFrame,Days2Consider=30,date_index=False): ##Original DF, TimeFrame of data, How many days to consider   
-    if timeFrame == '1M':                             
+def ReduceDataFrame(data,timeFrame,Days2Consider=30,date_index=False): ##Original DF, TimeFrame of data, How many days to consider
+    if timeFrame == '1M':
         Minutes2Consider = (Days2Consider*24*60)      ##How many minutes in x amoint of days
     elif timeFrame == '1H':
         Minutes2Consider = (Days2Consider*24)         ##How many hours in x amoint of days
@@ -273,12 +248,12 @@ def ReduceDataFrame(data,timeFrame,Days2Consider=30,date_index=False): ##Origina
 
 
 ##This allows you to choose how many days to consider in new data frame
-def SliceData(data,timeFrame,begining,ending,date_index=False): ##Original DF, TimeFrame of data, How many days to consider   
+def SliceData(data,timeFrame,begining,ending,date_index=False): ##Original DF, TimeFrame of data, How many days to consider
     ##slice the data to get most recent values of data for x amount of days
     data = data.tail(round(Minutes2Consider))
     df=data.copy()
-    
-    
+
+
     ##Re-index the data frame
     if date_index==True:
         pass
@@ -291,10 +266,10 @@ def SliceData(data,timeFrame,begining,ending,date_index=False): ##Original DF, T
 # In[49]:
 
 
-##This is the for the NN will be able to understand each row will contain many colums 
+##This is the for the NN will be able to understand each row will contain many colums
 ##colums will give values of stock and indicators from that instance to x amount time before that instance.
 ## so that each row is an independent input for the Neaural Network
-def AddAttributesLabels(data,Candles2Consider=30,tradeLenght=5,date_index=False): 
+def AddAttributesLabels(data,Candles2Consider=30,tradeLenght=5,date_index=False):
     whatToPredict = 'close'     ##this will be what i will use as the forcast value aka the Label
     df=data.copy()              ##Make a copy not as to change original
     head=list(df)
@@ -302,73 +277,73 @@ def AddAttributesLabels(data,Candles2Consider=30,tradeLenght=5,date_index=False)
     for i in range (Candles2Consider):   ##How many candle stick back for the NN to consider
         for j in range(count):           ##Add new colums with each feature but with past market values
             df[head[j]+'_'+str(i+1)] = df[head[j]].shift(i+1)
-        
-        
+
+
     lenghtTradePrediction = tradeLenght             ##lenght of trade
-    
+
     #Create a label that is 1 when up and 0 when down
-    #df['1(up) or 0(down)'] = np.where(df[whatToPredict].shift(-lenghtTradePrediction) > df[whatToPredict], 1, 0) 
-    
+    #df['1(up) or 0(down)'] = np.where(df[whatToPredict].shift(-lenghtTradePrediction) > df[whatToPredict], 1, 0)
+
     ##Create a label that tells us what the output lenghtPerUnitTime Later
     df['Label'] = df[whatToPredict].shift(-lenghtTradePrediction)
-    
-    
-    ##Get rid of rows that have empyt cells 
+
+
+    ##Get rid of rows that have empyt cells
     df.dropna(inplace = True)
-    
+
     ##Re-index the data frame
     if date_index==True:
         pass
     else:
         df = df.reset_index()
         del df['index']
-    
+
     return df
 
 
 # In[52]:
 def AddLabels(data,whatToPredict = ['close'], tradeLenght=5, date_index=False,DropNan=False):
     df=data.copy()              ##Make a copy not as to change original
-    
+
     ##Create a label that tells us what the output lenghtPerUnitTime Later
     for i in range (len(whatToPredict)):
-        for j in range (1,tradeLenght+1):   
+        for j in range (1,tradeLenght+1):
             df['Label_'+whatToPredict[i]+str(j)] = df[whatToPredict[i]].shift(-j)
-    
-    
-    ##Get rid of rows that have empyt cells 
+
+
+    ##Get rid of rows that have empyt cells
     if DropNan==True:
         df.dropna(inplace = True)
-    
+
     ##Re-index the data frame
     if date_index==True:
         pass
     else:
         df = df.reset_index()
         del df['index']
-    
+
     return df
 
 def AddLabel(data,whatToPredict = ['close'], tradeLenght=5, date_index=False,DropNan=False):
     df=data.copy()              ##Make a copy not as to change original
-    
+
     ##Create a label that tells us what the output lenghtPerUnitTime Later
-    for i in range (len(whatToPredict)):    
+    for i in range (len(whatToPredict)):
         df['Label_'+whatToPredict[i]] = df[whatToPredict[i]].shift(-tradeLenght)
-    
-    
-    ##Get rid of rows that have empyt cells 
+
+
+    ##Get rid of rows that have empyt cells
     if DropNan==True:
         df = df.dropna()
 
-    
+
     ##Re-index the data frame
     if date_index==True:
         pass
     else:
         df = df.reset_index()
         del df['index']
-    
+
     return df
 
 
@@ -392,7 +367,7 @@ def Test_prediction(x_test,y_test, prediction,close_position):
                     bad.append(0)
             else:
                 bad.append(0)
-                    
+
         ITM=len(good)
         OTM=len(bad)
         Trade_total=ITM+OTM
@@ -400,11 +375,10 @@ def Test_prediction(x_test,y_test, prediction,close_position):
         #print (str(ITM) + ' Trades ITM')
         #print (str(OTM) + ' Trades OTM')
         #print (str(win_PCT) + '% Accurate' )
-        
+
         return win_PCT
-    
+
     elif len(prediction)>len(y_test):
         print('Error Number of predicitions is greater than Answers')
     elif len(prediction)<len(y_test):
         print('Error Number of predicitions is less than Answers')
-
